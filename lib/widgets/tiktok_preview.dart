@@ -46,14 +46,15 @@ class TikTokPreview extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
+                      flex: 2,
                       child: Text(
                         data.authorName,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    const Spacer(),
                     GestureDetector(
                       onTap: () {},
                       child: const Icon(Icons.more_vert),
