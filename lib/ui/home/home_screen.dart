@@ -55,10 +55,16 @@ class _HomeViewState extends State<HomeView> {
         elevation: 0,
         actions: [
           IconButton(
-            onPressed: () => Navigator.pushNamed(
-              context,
-              RouteConstants.history,
-            ),
+            onPressed: () {
+              // Navigator.pushNamed(
+              //   context,
+              //   RouteConstants.history,
+              // );
+              showFailureDialog(
+                context,
+                text: 'This feature will be added later!',
+              );
+            },
             icon: const Icon(Icons.history),
           ),
         ],
