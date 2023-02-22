@@ -41,6 +41,9 @@ dependencies:
   device_info_plus: ^4.0.0
   flutter_html: ^2.2.1
   flutter_bloc: ^8.1.2
+  firebase_core: ^2.6.1
+  firebase_remote_config: ^3.0.12
+  url_launcher: ^6.1.9
 
 dev_dependencies:
   flutter_test:

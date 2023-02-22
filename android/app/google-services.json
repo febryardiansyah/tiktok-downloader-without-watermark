@@ -1,0 +1,193 @@
+{
+  "project_info": {
+    "project_number": "998046135473",
+    "firebase_url": "https://manga-mint.firebaseio.com",
+    "project_id": "manga-mint",
+    "storage_bucket": "manga-mint.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:998046135473:android:3befbad9a56d7fbb601e90",
+        "android_client_info": {
+          "package_name": "app.flutter.tiktok_downloader"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "998046135473-q8efo5cos6vbh2hgsemkl8uudgl98mf7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyASN8JitGXCjXbiKstX7FoguS4ts8wlwkg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "998046135473-q8efo5cos6vbh2hgsemkl8uudgl98mf7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "998046135473-sk8q1ug2ems0o9rje0mm89bonbl38v13.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.febryardiansyah.bacamanga.bacaMangaMobile"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:998046135473:android:6d7528a1fbddfb31601e90",
+        "android_client_info": {
+          "package_name": "com.febryardiansyah.baca_manga.baca_manga_mobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "998046135473-q8efo5cos6vbh2hgsemkl8uudgl98mf7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyASN8JitGXCjXbiKstX7FoguS4ts8wlwkg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "998046135473-q8efo5cos6vbh2hgsemkl8uudgl98mf7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "998046135473-sk8q1ug2ems0o9rje0mm89bonbl38v13.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.febryardiansyah.bacamanga.bacaMangaMobile"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:998046135473:android:eb538550dac0334f601e90",
+        "android_client_info": {
+          "package_name": "com.febryardiansyah.mangakuy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "998046135473-q8efo5cos6vbh2hgsemkl8uudgl98mf7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyASN8JitGXCjXbiKstX7FoguS4ts8wlwkg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "998046135473-q8efo5cos6vbh2hgsemkl8uudgl98mf7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "998046135473-sk8q1ug2ems0o9rje0mm89bonbl38v13.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.febryardiansyah.bacamanga.bacaMangaMobile"
+              }
+            }
+          ]
+        }
+      },
+      "admob_app_id": "ca-app-pub-5446765075160902~6245985828"
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:998046135473:android:5520ec79257df26f601e90",
+        "android_client_info": {
+          "package_name": "com.febryardiansyah.nimeflixanime"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "998046135473-q8efo5cos6vbh2hgsemkl8uudgl98mf7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyASN8JitGXCjXbiKstX7FoguS4ts8wlwkg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "998046135473-q8efo5cos6vbh2hgsemkl8uudgl98mf7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "998046135473-sk8q1ug2ems0o9rje0mm89bonbl38v13.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.febryardiansyah.bacamanga.bacaMangaMobile"
+              }
+            }
+          ]
+        }
+      },
+      "admob_app_id": "ca-app-pub-5446765075160902~4061913216"
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:998046135473:android:e3c00e3403094c71601e90",
+        "android_client_info": {
+          "package_name": "com.v2.mangakuynew"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "998046135473-q8efo5cos6vbh2hgsemkl8uudgl98mf7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyASN8JitGXCjXbiKstX7FoguS4ts8wlwkg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "998046135473-q8efo5cos6vbh2hgsemkl8uudgl98mf7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "998046135473-sk8q1ug2ems0o9rje0mm89bonbl38v13.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.febryardiansyah.bacamanga.bacaMangaMobile"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

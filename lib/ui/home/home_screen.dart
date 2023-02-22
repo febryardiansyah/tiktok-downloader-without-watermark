@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tiktok_downloader/models/app_version_model.dart';
 import 'package:tiktok_downloader/services/api_services.dart';
+import 'package:tiktok_downloader/services/firebase_service.dart';
+import 'package:tiktok_downloader/ui/home/bloc/app_version/app_version_cubit.dart';
 import 'package:tiktok_downloader/ui/home/bloc/download_video/download_video_cubit.dart';
 import 'package:tiktok_downloader/ui/home/bloc/get_data/get_data_cubit.dart';
 import 'package:tiktok_downloader/ui/home/bloc/validate_tiktok/validate_tiktok_cubit.dart';
 import 'package:tiktok_downloader/utils/custom_dialog.dart';
-import 'package:tiktok_downloader/utils/utils.dart';
 import 'package:flutter/services.dart';
 import 'package:tiktok_downloader/widgets/tiktok_preview.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -24,6 +27,10 @@ class HomeScreen extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => ValidateTiktokCubit(ApiServices()),
+        ),
+        BlocProvider(
+          create: (context) =>
+              AppVersionCubit(FirebaseService())..checkVersion(),
         ),
       ],
       child: GestureDetector(
@@ -97,6 +104,17 @@ class _HomeViewState extends State<HomeView> {
               }
               if (state is ValidateTiktokSuccess) {
                 Navigator.pop(context);
+              }
+            },
+          ),
+          BlocListener<AppVersionCubit, AppVersionState>(
+            listener: (context, state) {
+              if (state is AppVersionSuccess) {
+                final data = state.data;
+                final version = data.version;
+                if (version!.currentVersion != version.newVersion) {
+                  showUpdateBottomSheet(data);
+                }
               }
             },
           ),
@@ -213,7 +231,7 @@ class _HomeViewState extends State<HomeView> {
                   Expanded(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        primary: const Color(0xff333333),
+                        backgroundColor: const Color(0xff333333),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),
@@ -260,6 +278,60 @@ class _HomeViewState extends State<HomeView> {
                   ),
                 ],
               ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void showUpdateBottomSheet(AppVersionModel data) {
+    showModalBottomSheet(
+      context: context,
+      isDismissible: !data.force!,
+      enableDrag: !data.force!,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      builder: (context) => WillPopScope(
+        onWillPop: () {
+          return Future.value(false);
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Hello,',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'The latest version of our app is now available in playstore, please update your app.',
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xff333333),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                child: const Text('Update now'),
+                onPressed: () async {
+                  Uri parsedUrl = Uri.parse(data.link!);
+                  if (!await launchUrl(parsedUrl,
+                      mode: LaunchMode.externalApplication)) {
+                    showFailureDialog(context, text: 'Url cannot be opened');
+                  }
+                },
+              ),
+              const SizedBox(height: 34),
             ],
           ),
         ),
