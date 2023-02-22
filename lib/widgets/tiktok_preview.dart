@@ -3,7 +3,12 @@ import 'package:tiktok_downloader/models/tiktok_validation_model.dart';
 
 class TikTokPreview extends StatelessWidget {
   final TiktokValidationModel data;
-  const TikTokPreview({Key? key, required this.data}) : super(key: key);
+  final Function()? onTap;
+  const TikTokPreview({
+    Key? key,
+    required this.data,
+    this.onTap,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -55,10 +60,11 @@ class TikTokPreview extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    GestureDetector(
-                      onTap: () {},
-                      child: const Icon(Icons.more_vert),
-                    ),
+                    if (onTap != null)
+                      GestureDetector(
+                        onTap: () {},
+                        child: const Icon(Icons.more_vert),
+                      ),
                   ],
                 ),
                 const SizedBox(height: 8),
