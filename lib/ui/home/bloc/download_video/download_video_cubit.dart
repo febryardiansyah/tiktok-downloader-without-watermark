@@ -39,8 +39,8 @@ class DownloadVideoCubit extends Cubit<DownloadVideoState> {
 
         emit(state.copyWith(isDownloading: false, progressString: "Completed"));
 
-        final open = await OpenFilex.open(filePath);
-        log("OPEN RESULT: ${open.message}",name: "Open File");
+        // final open = await OpenFilex.open(filePath);
+        // log("OPEN RESULT: ${open.message}",name: "Open File");
       } else {
         emit(state.copyWith(
           err: 'Make sure to allow the Permission',

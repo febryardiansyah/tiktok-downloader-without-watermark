@@ -52,7 +52,7 @@ class ApiServices {
   }
 
   Future<bool> checkPermission() async {
-    final permissionStatus = await Permission.manageExternalStorage.request();
+    final permissionStatus = await Permission.storage.request();
     if (permissionStatus.isGranted) {
       return true;
     } else {

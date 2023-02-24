@@ -5,7 +5,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:open_filex/open_filex.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:tiktok_downloader/firebase_options.dart';
 import 'package:tiktok_downloader/utils/utils.dart';
