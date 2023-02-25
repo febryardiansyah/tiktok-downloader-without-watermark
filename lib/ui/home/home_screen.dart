@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tiktok_downloader/models/app_version_model.dart';
+import 'package:tiktok_downloader/models/tiktok_validation_model.dart';
 import 'package:tiktok_downloader/services/api_services.dart';
+import 'package:tiktok_downloader/services/db_service.dart';
 import 'package:tiktok_downloader/services/firebase_service.dart';
+import 'package:tiktok_downloader/ui/history/bloc/save_video/save_video_cubit.dart';
 import 'package:tiktok_downloader/ui/home/bloc/app_version/app_version_cubit.dart';
 import 'package:tiktok_downloader/ui/home/bloc/download_video/download_video_cubit.dart';
 import 'package:tiktok_downloader/ui/home/bloc/get_data/get_data_cubit.dart';
 import 'package:tiktok_downloader/ui/home/bloc/validate_tiktok/validate_tiktok_cubit.dart';
 import 'package:tiktok_downloader/utils/custom_dialog.dart';
 import 'package:flutter/services.dart';
+import 'package:tiktok_downloader/utils/utils.dart';
 import 'package:tiktok_downloader/widgets/tiktok_preview.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -32,6 +36,9 @@ class HomeScreen extends StatelessWidget {
           create: (context) =>
               AppVersionCubit(FirebaseService())..checkVersion(),
         ),
+        BlocProvider(
+          create: (context) => SaveVideoCubit(DbService()),
+        ),
       ],
       child: GestureDetector(
         onTap: () {
@@ -52,6 +59,7 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   final textEdc = TextEditingController();
+  TiktokValidationModel? video;
 
   @override
   Widget build(BuildContext context) {
@@ -63,14 +71,14 @@ class _HomeViewState extends State<HomeView> {
         actions: [
           IconButton(
             onPressed: () {
-              // Navigator.pushNamed(
-              //   context,
-              //   RouteConstants.history,
-              // );
-              showFailureDialog(
+              Navigator.pushNamed(
                 context,
-                text: 'This feature will be added later!',
+                RouteConstants.history,
               );
+              // showFailureDialog(
+              //   context,
+              //   text: 'This feature will be added later!',
+              // );
             },
             icon: const Icon(Icons.history),
           ),
@@ -89,7 +97,9 @@ class _HomeViewState extends State<HomeView> {
               }
               if (state is GetDataSuccess) {
                 Navigator.pop(context);
-                context.read<DownloadVideoCubit>().download(state.url);
+                context.read<DownloadVideoCubit>().download(
+                      state.url,
+                    );
               }
             },
           ),
@@ -104,6 +114,9 @@ class _HomeViewState extends State<HomeView> {
               }
               if (state is ValidateTiktokSuccess) {
                 Navigator.pop(context);
+                setState(() {
+                  video = state.data;
+                });
               }
             },
           ),
@@ -118,19 +131,30 @@ class _HomeViewState extends State<HomeView> {
               }
             },
           ),
+          BlocListener<DownloadVideoCubit, DownloadVideoState>(
+            listener: (context, state) {
+              if (state.isDone) {
+                context.read<SaveVideoCubit>().saveVideo(
+                      TiktokValidationModel(
+                        type: video?.type,
+                        title: video?.title,
+                        authorUrl: video?.authorUrl,
+                        authorName: video?.authorName,
+                        thumbnailUrl: video?.thumbnailUrl,
+                        videoUrl: video?.videoUrl,
+                        createdAt: DateTime.now(),
+                      ),
+                    );
+              }
+            },
+            child: Container(),
+          )
         ],
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            // mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // ElevatedButton(
-              //   onPressed: () {
-              //     showFailureDialog(context);
-              //   },
-              //   child: Text('TEST'),
-              // ),
               BlocBuilder<ValidateTiktokCubit, ValidateTiktokState>(
                 builder: (context, state) {
                   if (state is ValidateTiktokSuccess &&

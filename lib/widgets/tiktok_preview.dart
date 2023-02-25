@@ -38,7 +38,7 @@ class TikTokPreview extends StatelessWidget {
                 color: Colors.grey,
                 borderRadius: BorderRadius.circular(8),
                 image: DecorationImage(
-                  image: NetworkImage(data.thumbnailUrl),
+                  image: NetworkImage(data.thumbnailUrl!),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -56,7 +56,7 @@ class TikTokPreview extends StatelessWidget {
                     Expanded(
                       flex: 2,
                       child: Text(
-                        data.authorName,
+                        data.authorName!,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -69,7 +69,7 @@ class TikTokPreview extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  data.title,
+                  data.title!,
                   style: const TextStyle(
                     color: Colors.grey,
                   ),

@@ -13,6 +13,7 @@ class ValidateTiktokCubit extends Cubit<ValidateTiktokState> {
     emit(ValidateTiktokLoading());
     try {
       final data = await services.validateTiktokUrl(tiktokUrl);
+      data.videoUrl = tiktokUrl;
       emit(ValidateTiktokSuccess(data));
     } catch (e) {
       emit(ValidateTiktokFailure(e.toString()));

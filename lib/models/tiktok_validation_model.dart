@@ -1,58 +1,75 @@
 class TiktokValidationModel {
   TiktokValidationModel({
-    required this.version,
-    required this.type,
-    required this.title,
-    required this.authorUrl,
-    required this.authorName,
-    required this.width,
-    required this.height,
-    required this.html,
-    required this.thumbnailWidth,
-    required this.thumbnailHeight,
-    required this.thumbnailUrl,
-    required this.providerUrl,
-    required this.providerName,
-    required this.authorUniqueId,
-    required this.embedProductId,
-    required this.embedType,
+    this.version,
+    this.type,
+    this.title,
+    this.authorUrl,
+    this.authorName,
+    this.width,
+    this.height,
+    this.html,
+    this.thumbnailWidth,
+    this.thumbnailHeight,
+    this.thumbnailUrl,
+    this.providerUrl,
+    this.providerName,
+    this.authorUniqueId,
+    this.embedProductId,
+    this.embedType,
+    this.videoUrl,
+    this.createdAt,
   });
 
-  String version;
-  String type;
-  String title;
-  String authorUrl;
-  String authorName;
-  String width;
-  String height;
-  String html;
-  int thumbnailWidth;
-  int thumbnailHeight;
-  String thumbnailUrl;
-  String providerUrl;
-  String providerName;
-  String authorUniqueId;
-  String embedProductId;
-  String embedType;
+  String? version;
+  String? type;
+  String? title;
+  String? authorUrl;
+  String? authorName;
+  String? width;
+  String? height;
+  String? html;
+  int? thumbnailWidth;
+  int? thumbnailHeight;
+  String? thumbnailUrl;
+  String? providerUrl;
+  String? providerName;
+  String? authorUniqueId;
+  String? embedProductId;
+  String? embedType;
+  String? videoUrl;
+  DateTime? createdAt;
 
   factory TiktokValidationModel.fromJson(Map<String, dynamic> json) =>
       TiktokValidationModel(
-        version: json["version"],
-        type: json["type"],
-        title: json["title"],
-        authorUrl: json["author_url"],
-        authorName: json["author_name"],
-        width: json["width"],
-        height: json["height"],
-        html: json["html"],
-        thumbnailWidth: json["thumbnail_width"],
-        thumbnailHeight: json["thumbnail_height"],
-        thumbnailUrl: json["thumbnail_url"],
-        providerUrl: json["provider_url"],
-        providerName: json["provider_name"],
-        authorUniqueId: json["author_unique_id"],
-        embedProductId: json["embed_product_id"],
-        embedType: json["embed_type"],
+        version: json["version"] ?? null,
+        type: json["type"] ?? null,
+        title: json["title"] ?? null,
+        authorUrl: json["author_url"] ?? null,
+        authorName: json["author_name"] ?? null,
+        width: json["width"] ?? null,
+        height: json["height"] ?? null,
+        html: json["html"] ?? null,
+        thumbnailWidth: json["thumbnail_width"] ?? null,
+        thumbnailHeight: json["thumbnail_height"] ?? null,
+        thumbnailUrl: json["thumbnail_url"] ?? null,
+        providerUrl: json["provider_url"] ?? null,
+        providerName: json["provider_name"] ?? null,
+        authorUniqueId: json["author_unique_id"] ?? null,
+        embedProductId: json["embed_product_id"] ?? null,
+        embedType: json["embed_type"] ?? null,
+      );
+
+  factory TiktokValidationModel.fromSqlite(Map<String, dynamic> json) =>
+      TiktokValidationModel(
+        type: json["type"] ?? null,
+        title: json["title"] ?? null,
+        authorUrl: json["author_url"] ?? null,
+        authorName: json["author_name"] ?? null,
+        thumbnailUrl: json["thumbnail_url"] ?? null,
+        videoUrl: json['video_url'] ?? null,
+        createdAt: json['created_at'] == null
+            ? null
+            : DateTime.parse(json['created_at']),
       );
 
   Map<String, dynamic> toJson() => {
@@ -72,5 +89,15 @@ class TiktokValidationModel {
         "author_unique_id": authorUniqueId,
         "embed_product_id": embedProductId,
         "embed_type": embedType,
+      };
+
+  Map<String, dynamic> toSqlite() => {
+        "type": type,
+        "title": title,
+        "author_url": authorUrl,
+        "author_name": authorName,
+        "thumbnail_url": thumbnailUrl,
+        "video_url": videoUrl,
+        "created_at": createdAt?.toIso8601String(),
       };
 }

@@ -36,8 +36,11 @@ class DownloadVideoCubit extends Cubit<DownloadVideoState> {
           emit(state.copyWith(err: 'File does not exist'));
           return;
         }
-
-        emit(state.copyWith(isDownloading: false, progressString: "Completed"));
+        emit(state.copyWith(
+          isDownloading: false,
+          progressString: "Completed",
+          isDone: true,
+        ));
 
         // final open = await OpenFilex.open(filePath);
         // log("OPEN RESULT: ${open.message}",name: "Open File");
