@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tiktok_downloader/models/tiktok_validation_model.dart';
 import 'package:tiktok_downloader/services/db_service.dart';
 import 'package:tiktok_downloader/ui/history/bloc/get_saved_video/get_saved_video_cubit.dart';
+import 'package:tiktok_downloader/ui/history/bloc/remove_video/remove_video_cubit.dart';
+import 'package:tiktok_downloader/utils/custom_dialog.dart';
 import 'package:tiktok_downloader/widgets/tiktok_preview.dart';
 
 class HistoryScreen extends StatelessWidget {
@@ -10,22 +12,16 @@ class HistoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => GetSavedVideoCubit(DbService()),
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('History'),
-          backgroundColor: Colors.black,
-          elevation: 0,
-          actions: [
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.delete),
-            ),
-          ],
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) => GetSavedVideoCubit(DbService()),
         ),
-        body: HistoryView(),
-      ),
+        BlocProvider(
+          create: (_) => RemoveVideoCubit(DbService()),
+        ),
+      ],
+      child: HistoryView(),
     );
   }
 }
@@ -46,36 +42,64 @@ class _HistoryViewState extends State<HistoryView> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<GetSavedVideoCubit, GetSavedVideoState>(
-      builder: (context, state) {
-        if (state is GetSavedVideoLoading) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-        if (state is GetSavedVideoFailure) {
-          return Center(
-            child: Text(state.msg),
-          );
-        }
-        if (state is GetSavedVideoSuccess) {
-          final data = state.data;
-          return ListView.builder(
-            itemCount: data.length,
-            padding: const EdgeInsets.all(16),
-            itemBuilder: (context, i) {
-              final item = data[i];
-              return TikTokPreview(
-                data: item,
-                onTap: () {
-                  showMore(item);
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('History'),
+        backgroundColor: Colors.black,
+        elevation: 0,
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.delete),
+          ),
+        ],
+      ),
+      body: BlocListener<RemoveVideoCubit, RemoveVideoState>(
+        listener: (context, state) {
+          if (state is RemoveVideoLoading) {
+            showLoadingDialog(context);
+          }
+          if (state is RemoveVideoFailure) {
+            Navigator.pop(context);
+            showFailureDialog(context, text: state.msg);
+          }
+          if (state is RemoveVideoSuccess) {
+            Navigator.pop(context);
+            context.read<GetSavedVideoCubit>().fetchData();
+          }
+        },
+        child: BlocBuilder<GetSavedVideoCubit, GetSavedVideoState>(
+          builder: (context, state) {
+            if (state is GetSavedVideoLoading) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            if (state is GetSavedVideoFailure) {
+              return Center(
+                child: Text(state.msg),
+              );
+            }
+            if (state is GetSavedVideoSuccess) {
+              final data = state.data;
+              return ListView.builder(
+                itemCount: data.length,
+                padding: const EdgeInsets.all(16),
+                itemBuilder: (context, i) {
+                  final item = data[i];
+                  return TikTokPreview(
+                    data: item,
+                    onTap: () {
+                      showMore(item);
+                    },
+                  );
                 },
               );
-            },
-          );
-        }
-        return Container();
-      },
+            }
+            return Container();
+          },
+        ),
+      ),
     );
   }
 
@@ -89,7 +113,7 @@ class _HistoryViewState extends State<HistoryView> {
           topRight: Radius.circular(16),
         ),
       ),
-      builder: (context) => Padding(
+      builder: (_) => Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -102,18 +126,20 @@ class _HistoryViewState extends State<HistoryView> {
             ListTile(
               leading: Icon(Icons.open_in_browser),
               title: Text('Open video in TikTok'),
-              onTap: (){},
+              onTap: () {},
             ),
             ListTile(
               leading: Icon(Icons.link),
               title: Text('Copy tiktok video url'),
-              onTap: (){},
+              onTap: () {},
             ),
             ListTile(
               leading: Icon(Icons.delete),
               title: Text('Delete video'),
-              onTap: (){
+              onTap: () {
                 print(item.videoPath);
+                Navigator.pop(context);
+                context.read<RemoveVideoCubit>().removeVideo(item.videoPath!);
               },
             ),
           ],

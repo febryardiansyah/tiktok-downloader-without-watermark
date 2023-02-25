@@ -16,7 +16,8 @@ class DbService {
       join(path, 'second.db'),
       onCreate: (db, version) async {
         final batch = db.batch();
-        batch.execute("CREATE TABLE $_historyTable (id INTEGER PRIMARY KEY AUTOINCREMENT, type TEXT NOT NULL, title TEXT NOT NULL, author_url TEXT NOT NULL, author_name TEXT NOT NULL, thumbnail_url TEXT NOT NULL, video_url TEXT NOT NULL, video_path TEXT NOT NULL, created_at DATETIME NOT NULL)");
+        batch.execute(
+            "CREATE TABLE $_historyTable (id INTEGER PRIMARY KEY AUTOINCREMENT, type TEXT NOT NULL, title TEXT NOT NULL, author_url TEXT NOT NULL, author_name TEXT NOT NULL, thumbnail_url TEXT NOT NULL, video_url TEXT NOT NULL, video_path TEXT NOT NULL, created_at DATETIME NOT NULL)");
         batch.commit();
       },
       version: 1,
@@ -29,7 +30,7 @@ class DbService {
       final db = await _initializeDb();
       await db.insert(_historyTable, video.toSqlite());
       return 'Video has been saved';
-    }on DatabaseException catch (e) {
+    } on DatabaseException catch (e) {
       print('SAVE VIDEO ERR: ${e.result}');
       throw e.result ?? 'Failure';
     }
@@ -41,10 +42,27 @@ class DbService {
       final res = await db.query(_historyTable, orderBy: 'created_at DESC');
       print(res);
 
-      return List<TiktokValidationModel>.from((res).map((e) => TiktokValidationModel.fromSqlite(e)));
+      return List<TiktokValidationModel>.from(
+        (res).map((e) => TiktokValidationModel.fromSqlite(e)),
+      );
     } on DatabaseException catch (e) {
       print('GET VIDEOS ERR: ${e.result}');
       throw e.result ?? 'Failure';
+    }
+  }
+
+  Future<void> removeVideo(String videoPath) async {
+    try {
+      final db = await _initializeDb();
+      await db.delete(
+        _historyTable,
+        where: 'video_path =?',
+        whereArgs: [videoPath],
+      );
+      // return 'Remove video completed';
+    } on DatabaseException catch (e) {
+      print('REMOVE VIDEO ERR: ${e.result}');
+      throw e.result ?? "Failure";
     }
   }
 }
