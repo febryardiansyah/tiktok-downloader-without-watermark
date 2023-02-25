@@ -17,6 +17,7 @@ class TiktokValidationModel {
     this.embedProductId,
     this.embedType,
     this.videoUrl,
+    this.videoPath,
     this.createdAt,
   });
 
@@ -37,6 +38,7 @@ class TiktokValidationModel {
   String? embedProductId;
   String? embedType;
   String? videoUrl;
+  String? videoPath;
   DateTime? createdAt;
 
   factory TiktokValidationModel.fromJson(Map<String, dynamic> json) =>
@@ -67,6 +69,7 @@ class TiktokValidationModel {
         authorName: json["author_name"] ?? null,
         thumbnailUrl: json["thumbnail_url"] ?? null,
         videoUrl: json['video_url'] ?? null,
+        videoPath: json['video_path'] ?? null,
         createdAt: json['created_at'] == null
             ? null
             : DateTime.parse(json['created_at']),
@@ -98,6 +101,7 @@ class TiktokValidationModel {
         "author_name": authorName,
         "thumbnail_url": thumbnailUrl,
         "video_url": videoUrl,
+        "video_path": videoPath,
         "created_at": createdAt?.toIso8601String(),
       };
 }

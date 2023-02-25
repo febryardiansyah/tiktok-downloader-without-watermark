@@ -142,6 +142,7 @@ class _HomeViewState extends State<HomeView> {
                         authorName: video?.authorName,
                         thumbnailUrl: video?.thumbnailUrl,
                         videoUrl: video?.videoUrl,
+                        videoPath: state.videoPath,
                         createdAt: DateTime.now(),
                       ),
                     );

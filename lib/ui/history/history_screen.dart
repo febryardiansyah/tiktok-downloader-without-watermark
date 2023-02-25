@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tiktok_downloader/models/tiktok_validation_model.dart';
 import 'package:tiktok_downloader/services/db_service.dart';
 import 'package:tiktok_downloader/ui/history/bloc/get_saved_video/get_saved_video_cubit.dart';
 import 'package:tiktok_downloader/widgets/tiktok_preview.dart';
@@ -66,13 +67,58 @@ class _HistoryViewState extends State<HistoryView> {
               final item = data[i];
               return TikTokPreview(
                 data: item,
-                onTap: () {},
+                onTap: () {
+                  showMore(item);
+                },
               );
             },
           );
         }
         return Container();
       },
+    );
+  }
+
+  void showMore(TiktokValidationModel item) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(16),
+          topRight: Radius.circular(16),
+        ),
+      ),
+      builder: (context) => Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: Icon(Icons.close),
+            ),
+            SizedBox(height: 12),
+            ListTile(
+              leading: Icon(Icons.open_in_browser),
+              title: Text('Open video in TikTok'),
+              onTap: (){},
+            ),
+            ListTile(
+              leading: Icon(Icons.link),
+              title: Text('Copy tiktok video url'),
+              onTap: (){},
+            ),
+            ListTile(
+              leading: Icon(Icons.delete),
+              title: Text('Delete video'),
+              onTap: (){
+                print(item.videoPath);
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

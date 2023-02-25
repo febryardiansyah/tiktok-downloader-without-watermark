@@ -17,7 +17,7 @@ class DownloadVideoCubit extends Cubit<DownloadVideoState> {
       final checkPermission = await services.checkPermission();
       if (checkPermission) {
         var dir = Directory('/sdcard/download/');
-        String fileName = '${DateTime.now().microsecondsSinceEpoch}demo.mp4';
+        String fileName = '${DateTime.now().microsecondsSinceEpoch}.mp4';
         String filePath = "${dir.path}$fileName";
         await dio.download(
           responseUrl,
@@ -40,6 +40,7 @@ class DownloadVideoCubit extends Cubit<DownloadVideoState> {
           isDownloading: false,
           progressString: "Completed",
           isDone: true,
+          videoPath: filePath,
         ));
 
         // final open = await OpenFilex.open(filePath);

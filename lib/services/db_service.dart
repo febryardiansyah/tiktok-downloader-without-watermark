@@ -13,10 +13,10 @@ class DbService {
     String path = await getDatabasesPath();
 
     return openDatabase(
-      join(path, 'first.db'),
+      join(path, 'second.db'),
       onCreate: (db, version) async {
         final batch = db.batch();
-        batch.execute("CREATE TABLE $_historyTable (id INTEGER PRIMARY KEY AUTOINCREMENT, type TEXT NOT NULL, title TEXT NOT NULL, author_url TEXT NOT NULL, author_name TEXT NOT NULL, thumbnail_url TEXT NOT NULL, video_url TEXT NOT NULL, created_at DATETIME NOT NULL)");
+        batch.execute("CREATE TABLE $_historyTable (id INTEGER PRIMARY KEY AUTOINCREMENT, type TEXT NOT NULL, title TEXT NOT NULL, author_url TEXT NOT NULL, author_name TEXT NOT NULL, thumbnail_url TEXT NOT NULL, video_url TEXT NOT NULL, video_path TEXT NOT NULL, created_at DATETIME NOT NULL)");
         batch.commit();
       },
       version: 1,

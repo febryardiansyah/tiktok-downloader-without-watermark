@@ -62,7 +62,7 @@ class TikTokPreview extends StatelessWidget {
                     ),
                     if (onTap != null)
                       GestureDetector(
-                        onTap: () {},
+                        onTap: onTap,
                         child: const Icon(Icons.more_vert),
                       ),
                   ],
