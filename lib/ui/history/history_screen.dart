@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tiktok_downloader/models/tiktok_validation_model.dart';
 import 'package:tiktok_downloader/services/db_service.dart';
 import 'package:tiktok_downloader/ui/history/bloc/get_saved_video/get_saved_video_cubit.dart';
+import 'package:tiktok_downloader/ui/history/bloc/remove_from_history/remove_from_history_cubit.dart';
 import 'package:tiktok_downloader/ui/history/bloc/remove_video/remove_video_cubit.dart';
 import 'package:tiktok_downloader/utils/custom_dialog.dart';
 import 'package:tiktok_downloader/widgets/tiktok_preview.dart';
@@ -19,6 +20,9 @@ class HistoryScreen extends StatelessWidget {
         ),
         BlocProvider(
           create: (_) => RemoveVideoCubit(DbService()),
+        ),
+        BlocProvider(
+          create: (_) => RemoveFromHistoryCubit(DbService()),
         ),
       ],
       child: HistoryView(),
@@ -47,27 +51,46 @@ class _HistoryViewState extends State<HistoryView> {
         title: const Text('History'),
         backgroundColor: Colors.black,
         elevation: 0,
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.delete),
+        // actions: [
+        //   IconButton(
+        //     onPressed: () {},
+        //     icon: const Icon(Icons.delete),
+        //   ),
+        // ],
+      ),
+      body: MultiBlocListener(
+        listeners: [
+          BlocListener<RemoveVideoCubit, RemoveVideoState>(
+            listener: (context, state) {
+              if (state is RemoveVideoLoading) {
+                showLoadingDialog(context);
+              }
+              if (state is RemoveVideoFailure) {
+                Navigator.pop(context);
+                showFailureDialog(context, text: state.msg);
+              }
+              if (state is RemoveVideoSuccess) {
+                Navigator.pop(context);
+                context.read<GetSavedVideoCubit>().fetchData();
+              }
+            },
+          ),
+          BlocListener<RemoveFromHistoryCubit, RemoveFromHistoryState>(
+            listener: (context, state) {
+              if (state is RemoveFromHistoryLoading) {
+                showLoadingDialog(context);
+              }
+              if (state is RemoveFromHistoryFailure) {
+                Navigator.pop(context);
+                showFailureDialog(context, text: state.msg);
+              }
+              if (state is RemoveFromHistorySuccess) {
+                Navigator.pop(context);
+                context.read<GetSavedVideoCubit>().fetchData();
+              }
+            },
           ),
         ],
-      ),
-      body: BlocListener<RemoveVideoCubit, RemoveVideoState>(
-        listener: (context, state) {
-          if (state is RemoveVideoLoading) {
-            showLoadingDialog(context);
-          }
-          if (state is RemoveVideoFailure) {
-            Navigator.pop(context);
-            showFailureDialog(context, text: state.msg);
-          }
-          if (state is RemoveVideoSuccess) {
-            Navigator.pop(context);
-            context.read<GetSavedVideoCubit>().fetchData();
-          }
-        },
         child: BlocBuilder<GetSavedVideoCubit, GetSavedVideoState>(
           builder: (context, state) {
             if (state is GetSavedVideoLoading) {
@@ -82,6 +105,11 @@ class _HistoryViewState extends State<HistoryView> {
             }
             if (state is GetSavedVideoSuccess) {
               final data = state.data;
+              if (data.isEmpty) {
+                return Center(
+                  child: Text('No History yet'),
+                );
+              }
               return ListView.builder(
                 itemCount: data.length,
                 padding: const EdgeInsets.all(16),
@@ -123,15 +151,24 @@ class _HistoryViewState extends State<HistoryView> {
               icon: Icon(Icons.close),
             ),
             SizedBox(height: 12),
+            // ListTile(
+            //   leading: Icon(Icons.open_in_browser),
+            //   title: Text('Open video in TikTok'),
+            //   onTap: () {},
+            // ),
+            // ListTile(
+            //   leading: Icon(Icons.link),
+            //   title: Text('Copy tiktok video url'),
+            //   onTap: () {},
+            // ),
             ListTile(
-              leading: Icon(Icons.open_in_browser),
-              title: Text('Open video in TikTok'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: Icon(Icons.link),
-              title: Text('Copy tiktok video url'),
-              onTap: () {},
+              leading: Icon(Icons.remove_circle_outline),
+              title: Text('Remove from history'),
+              onTap: () {
+                print(item.videoPath);
+                Navigator.pop(context);
+                context.read<RemoveFromHistoryCubit>().remove(item.videoPath!);
+              },
             ),
             ListTile(
               leading: Icon(Icons.delete),

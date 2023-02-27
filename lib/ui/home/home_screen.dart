@@ -133,7 +133,16 @@ class _HomeViewState extends State<HomeView> {
           ),
           BlocListener<DownloadVideoCubit, DownloadVideoState>(
             listener: (context, state) {
+              if (state.hasErr) {
+                showFailureDialog(context, text: state.err);
+              }
               if (state.isDone) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Download video successfuly'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
                 context.read<SaveVideoCubit>().saveVideo(
                       TiktokValidationModel(
                         type: video?.type,

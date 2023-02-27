@@ -32,10 +32,15 @@ class DownloadVideoCubit extends Cubit<DownloadVideoState> {
           },
         );
 
-        if (!await File(filePath).exists()) {
-          emit(state.copyWith(err: 'File does not exist'));
-          return;
-        }
+        // if (!await File(filePath).exists()) {
+        //   emit(
+        //     state.copyWith(
+        //       err: 'File does not exist',
+        //       hasErr: true,
+        //     ),
+        //   );
+        //   return;
+        // }
         emit(state.copyWith(
           isDownloading: false,
           progressString: "Completed",
@@ -48,12 +53,14 @@ class DownloadVideoCubit extends Cubit<DownloadVideoState> {
       } else {
         emit(state.copyWith(
           err: 'Make sure to allow the Permission',
+          hasErr: true,
         ));
       }
     } catch (e) {
       log("Error: $e", name: "DOWNLOAD");
       emit(state.copyWith(
         err: e.toString(),
+        hasErr: true,
       ));
     }
   }
