@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:tiktok_downloader/models/tiktok_validation_model.dart';
 import 'package:tiktok_downloader/services/db_service.dart';
 import 'package:tiktok_downloader/ui/history/bloc/get_saved_video/get_saved_video_cubit.dart';
@@ -7,6 +11,7 @@ import 'package:tiktok_downloader/ui/history/bloc/remove_from_history/remove_fro
 import 'package:tiktok_downloader/ui/history/bloc/remove_video/remove_video_cubit.dart';
 import 'package:tiktok_downloader/utils/custom_dialog.dart';
 import 'package:tiktok_downloader/widgets/tiktok_preview.dart';
+import 'package:cross_file/cross_file.dart';
 
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({Key? key}) : super(key: key);
@@ -177,6 +182,28 @@ class _HistoryViewState extends State<HistoryView> {
                 print(item.videoPath);
                 Navigator.pop(context);
                 context.read<RemoveVideoCubit>().removeVideo(item.videoPath!);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.share),
+              title: Text('Share video'),
+              onTap: () async {
+                try {
+                  Navigator.pop(context);
+                  final file = File(item.videoPath!);
+                  if (!await file.exists()) {
+                    showFailureDialog(context, text: "File does not exist");
+                    return;
+                  }
+
+                  print("PATH ${item.videoPath}");
+                  Share.shareXFiles(
+                    [XFile('${file.path}')],
+                    text: "I have a nice video, check this out",
+                  );
+                } catch (e) {
+                  print("SHARE ERR: $e");
+                }
               },
             ),
           ],

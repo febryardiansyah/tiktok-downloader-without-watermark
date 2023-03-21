@@ -1,12 +1,17 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:tiktok_downloader/models/app_version_model.dart';
 import 'package:tiktok_downloader/models/tiktok_validation_model.dart';
 import 'package:tiktok_downloader/services/api_services.dart';
 import 'package:tiktok_downloader/services/db_service.dart';
 import 'package:tiktok_downloader/services/firebase_service.dart';
 import 'package:tiktok_downloader/ui/history/bloc/save_video/save_video_cubit.dart';
+import 'package:tiktok_downloader/ui/home/bloc/ads_counter/ads_counter_cubit.dart';
 import 'package:tiktok_downloader/ui/home/bloc/app_version/app_version_cubit.dart';
+import 'package:tiktok_downloader/ui/home/bloc/download_file/download_file_cubit.dart';
 import 'package:tiktok_downloader/ui/home/bloc/download_video/download_video_cubit.dart';
 import 'package:tiktok_downloader/ui/home/bloc/get_data/get_data_cubit.dart';
 import 'package:tiktok_downloader/ui/home/bloc/validate_tiktok/validate_tiktok_cubit.dart';
@@ -39,6 +44,12 @@ class HomeScreen extends StatelessWidget {
         BlocProvider(
           create: (context) => SaveVideoCubit(DbService()),
         ),
+        BlocProvider(
+          create: (context) => AdsCounterCubit(),
+        ),
+        BlocProvider(
+          create: (context) => DownloadFileCubit(ApiServices()),
+        ),
       ],
       child: GestureDetector(
         onTap: () {
@@ -61,6 +72,28 @@ class _HomeViewState extends State<HomeView> {
   final textEdc = TextEditingController();
   TiktokValidationModel? video;
 
+  late String appVersion;
+
+  void getVersion() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    String _version = packageInfo.version;
+    setState(() {
+      appVersion = _version;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<DownloadFileCubit>().registerPort();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    ui.IsolateNameServer.removePortNameMapping('downloader_send_port');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -75,10 +108,6 @@ class _HomeViewState extends State<HomeView> {
                 context,
                 RouteConstants.history,
               );
-              // showFailureDialog(
-              //   context,
-              //   text: 'This feature will be added later!',
-              // );
             },
             icon: const Icon(Icons.history),
           ),
@@ -97,9 +126,10 @@ class _HomeViewState extends State<HomeView> {
               }
               if (state is GetDataSuccess) {
                 Navigator.pop(context);
-                context.read<DownloadVideoCubit>().download(
-                      state.url,
-                    );
+                context.read<DownloadFileCubit>().startDownload(state.url);
+                // context.read<DownloadVideoCubit>().download(
+                //       state.url,
+                //     );
               }
             },
           ),
@@ -121,22 +151,58 @@ class _HomeViewState extends State<HomeView> {
             },
           ),
           BlocListener<AppVersionCubit, AppVersionState>(
-            listener: (context, state) {
+            listener: (context, state) async {
+              PackageInfo packageInfo = await PackageInfo.fromPlatform();
+              String appVersion = packageInfo.version;
               if (state is AppVersionSuccess) {
                 final data = state.data;
                 final version = data.version;
-                if (version!.currentVersion != version.newVersion) {
+                if (version!.currentVersion != appVersion) {
                   showUpdateBottomSheet(data);
                 }
               }
             },
           ),
-          BlocListener<DownloadVideoCubit, DownloadVideoState>(
+          // BlocListener<DownloadVideoCubit, DownloadVideoState>(
+          //   listener: (context, state) {
+          //     if (state.hasErr) {
+          //       showFailureDialog(context, text: state.err);
+          //     }
+          //     if (state.isDone) {
+          //       ScaffoldMessenger.of(context).showSnackBar(
+          //         SnackBar(
+          //           content: Text('Download video successfuly'),
+          //           backgroundColor: Colors.green,
+          //         ),
+          //       );
+          //       context.read<SaveVideoCubit>().saveVideo(
+          //             TiktokValidationModel(
+          //               type: video?.type,
+          //               title: video?.title,
+          //               authorUrl: video?.authorUrl,
+          //               authorName: video?.authorName,
+          //               thumbnailUrl: video?.thumbnailUrl,
+          //               videoUrl: video?.videoUrl,
+          //               videoPath: state.videoPath,
+          //               createdAt: DateTime.now(),
+          //             ),
+          //           );
+          //     }
+          //   },
+          // ),
+          BlocListener<DownloadFileCubit, DownloadFileState>(
             listener: (context, state) {
-              if (state.hasErr) {
+              if (state.err != null) {
                 showFailureDialog(context, text: state.err);
               }
-              if (state.isDone) {
+              if (state.downloadStarted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Loading....'),
+                  ),
+                );
+              }
+              if (state.downloadDone) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text('Download video successfuly'),
@@ -151,10 +217,18 @@ class _HomeViewState extends State<HomeView> {
                         authorName: video?.authorName,
                         thumbnailUrl: video?.thumbnailUrl,
                         videoUrl: video?.videoUrl,
-                        videoPath: state.videoPath,
+                        videoPath: state.filePath,
                         createdAt: DateTime.now(),
                       ),
                     );
+                context.read<DownloadFileCubit>().openFile();
+              }
+            },
+          ),
+          BlocListener<AdsCounterCubit, int>(
+            listener: (context, state) {
+              if (state % 2 == 1) {
+                /// show ads here
               }
             },
             child: Container(),
@@ -178,9 +252,9 @@ class _HomeViewState extends State<HomeView> {
                             const SizedBox(height: 32),
                           ],
                         ),
-                        BlocBuilder<DownloadVideoCubit, DownloadVideoState>(
+                        BlocBuilder<DownloadFileCubit, DownloadFileState>(
                           builder: (context, state) {
-                            if (state.isDownloading) {
+                            if (state.downloadStarted) {
                               return Container(
                                 height: 114,
                                 width: MediaQuery.of(context).size.width,
@@ -190,22 +264,7 @@ class _HomeViewState extends State<HomeView> {
                                   color: Colors.black.withOpacity(0.5),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    const CircularProgressIndicator(),
-                                    const SizedBox(
-                                      height: 20.0,
-                                    ),
-                                    Text(
-                                      state.progressString,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    )
-                                  ],
-                                ),
+                                child: CircularProgressIndicator(),
                               );
                             }
                             return Container();
@@ -292,7 +351,7 @@ class _HomeViewState extends State<HomeView> {
                       return Expanded(
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            primary: Colors.blue,
+                            backgroundColor: Colors.blue,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),
                             ),
@@ -300,6 +359,7 @@ class _HomeViewState extends State<HomeView> {
                           onPressed: state is ValidateTiktokSuccess &&
                                   textEdc.text.isNotEmpty
                               ? () {
+                                  // context.read<AdsCounterCubit>().increment();
                                   context
                                       .read<GetDataCubit>()
                                       .fetchData(textEdc.text);
@@ -312,6 +372,15 @@ class _HomeViewState extends State<HomeView> {
                   ),
                 ],
               ),
+              const SizedBox(height: 32),
+              // Center(
+              //   child: Container(
+              //     alignment: Alignment.center,
+              //     child: AdWidget(ad: myBanner),
+              //     width: myBanner.size.width.toDouble(),
+              //     height: myBanner.size.height.toDouble(),
+              //   ),
+              // ),
             ],
           ),
         ),

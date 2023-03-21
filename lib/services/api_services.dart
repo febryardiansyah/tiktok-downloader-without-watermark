@@ -1,7 +1,10 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:android_path_provider/android_path_provider.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:tiktok_downloader/models/tiktok_validation_model.dart';
 import 'package:tiktok_downloader/utils/utils.dart';
@@ -70,6 +73,33 @@ class ApiServices {
       );
 
       return TiktokValidationModel.fromJson(res.data);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<String> downloadFile(String responseUrl) async {
+    // Directory? dir = await getExternalStorageDirectory();
+    var downloadPath = await AndroidPathProvider.downloadsPath;
+    try {
+      final permissionStatus = await Permission.storage.request();
+      String fileName = '${DateTime.now().microsecondsSinceEpoch}.mp4';
+      final saveDir = Directory(downloadPath);
+      if (!saveDir.existsSync()) {
+        await saveDir.create();
+      }
+      if (permissionStatus.isGranted) {
+        await FlutterDownloader.enqueue(
+          url: responseUrl,
+          savedDir: downloadPath,
+          showNotification: true,
+          fileName: '$fileName',
+          openFileFromNotification: true,
+          // saveInPublicStorage: true,
+        );
+      }
+      String path = '${downloadPath}/$fileName';
+      return path;
     } catch (e) {
       rethrow;
     }

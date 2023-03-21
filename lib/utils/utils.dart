@@ -4,10 +4,11 @@ import 'package:tiktok_downloader/ui/home/home_screen.dart';
 import 'package:tiktok_downloader/ui/splash_screen.dart';
 
 class BaseString {
-  static String downloadUrl =
-      'https://downloader-api.febryardiansyah.my.id/api/tiktok';
+  static String downloadUrl = 'https://downloader-api.kaedenoki.net/api/tiktok';
   static String serverError = 'Server is down right now, try it later';
   static String errorNoInternet = 'Check your internet!';
+  static String adBannerId = 'ca-app-pub-3297792663114510/4455326119';
+  static String adInterstitialId = 'ca-app-pub-3297792663114510/7274164790';
 }
 
 class ImageConstants {
