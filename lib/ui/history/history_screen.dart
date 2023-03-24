@@ -1,7 +1,9 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:tiktok_downloader/models/tiktok_validation_model.dart';
@@ -120,11 +122,32 @@ class _HistoryViewState extends State<HistoryView> {
                 padding: const EdgeInsets.all(16),
                 itemBuilder: (context, i) {
                   final item = data[i];
-                  return TikTokPreview(
-                    data: item,
-                    onTap: () {
-                      showMore(item);
+                  return GestureDetector(
+                    onTap: () async {
+                      try {
+                        final result = await OpenFilex.open(item.videoPath);
+                        if(result.type == ResultType.fileNotFound){
+                          showFailureDialog(context,text: "File does not exist");
+                          return;
+                        }
+                        log(
+                          '${result.type}: ${item.videoPath}',
+                          name: 'OPEN_FILE_RESULT_TYPE',
+                        );
+                      } catch (e) {
+                        log(
+                          'ERROR: $e',
+                          name: 'OPEN_FILE_RESULT_TYPE',
+                        );
+                        showFailureDialog(context,text: "$e");
+                      }
                     },
+                    child: TikTokPreview(
+                      data: item,
+                      onTap: () {
+                        showMore(item);
+                      },
+                    ),
                   );
                 },
               );
@@ -184,28 +207,28 @@ class _HistoryViewState extends State<HistoryView> {
                 context.read<RemoveVideoCubit>().removeVideo(item.videoPath!);
               },
             ),
-            ListTile(
-              leading: Icon(Icons.share),
-              title: Text('Share video'),
-              onTap: () async {
-                try {
-                  Navigator.pop(context);
-                  final file = File(item.videoPath!);
-                  if (!await file.exists()) {
-                    showFailureDialog(context, text: "File does not exist");
-                    return;
-                  }
+            // ListTile(
+            //   leading: Icon(Icons.share),
+            //   title: Text('Share video'),
+            //   onTap: () async {
+            //     try {
+            //       Navigator.pop(context);
+            //       final file = File(item.videoPath!);
+            //       if (!await file.exists()) {
+            //         showFailureDialog(context, text: "File does not exist");
+            //         return;
+            //       }
 
-                  print("PATH ${item.videoPath}");
-                  Share.shareXFiles(
-                    [XFile('${file.path}')],
-                    text: "I have a nice video, check this out",
-                  );
-                } catch (e) {
-                  print("SHARE ERR: $e");
-                }
-              },
-            ),
+            //       print("PATH ${item.videoPath}");
+            //       Share.shareXFiles(
+            //         [XFile('${file.path}')],
+            //         text: "I have a nice video, check this out",
+            //       );
+            //     } catch (e) {
+            //       print("SHARE ERR: $e");
+            //     }
+            //   },
+            // ),
           ],
         ),
       ),

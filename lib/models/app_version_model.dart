@@ -4,6 +4,7 @@ class AppVersionModel {
   final String? link;
   final List<String>? changeLogs;
   final bool? force;
+  final bool? showUpdate;
 
   AppVersionModel({
     this.title,
@@ -11,6 +12,7 @@ class AppVersionModel {
     this.link,
     this.changeLogs,
     this.force,
+    this.showUpdate,
   });
 
   factory AppVersionModel.fromMap(Map<String, dynamic> json) {
@@ -20,6 +22,7 @@ class AppVersionModel {
       link: json['link'],
       changeLogs: List<String>.from(json['change_logs']),
       force: json['force'],
+      showUpdate: json['show_update'],
     );
   }
 }

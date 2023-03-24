@@ -157,8 +157,10 @@ class _HomeViewState extends State<HomeView> {
               if (state is AppVersionSuccess) {
                 final data = state.data;
                 final version = data.version;
-                if (version!.currentVersion != appVersion) {
-                  showUpdateBottomSheet(data);
+                if (data.showUpdate!) {
+                  if (version!.currentVersion != appVersion) {
+                    showUpdateBottomSheet(data);
+                  }
                 }
               }
             },
@@ -193,6 +195,7 @@ class _HomeViewState extends State<HomeView> {
           BlocListener<DownloadFileCubit, DownloadFileState>(
             listener: (context, state) {
               if (state.err != null) {
+                print('DOWNLOAD BloC: ERR');
                 showFailureDialog(context, text: state.err);
               }
               if (state.downloadStarted) {
@@ -244,32 +247,10 @@ class _HomeViewState extends State<HomeView> {
                   if (state is ValidateTiktokSuccess &&
                       textEdc.text.isNotEmpty) {
                     final data = state.data;
-                    return Stack(
+                    return Column(
                       children: [
-                        Column(
-                          children: [
-                            TikTokPreview(data: data),
-                            const SizedBox(height: 32),
-                          ],
-                        ),
-                        BlocBuilder<DownloadFileCubit, DownloadFileState>(
-                          builder: (context, state) {
-                            if (state.downloadStarted) {
-                              return Container(
-                                height: 114,
-                                width: MediaQuery.of(context).size.width,
-                                margin: const EdgeInsets.only(bottom: 8),
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: Colors.black.withOpacity(0.5),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: CircularProgressIndicator(),
-                              );
-                            }
-                            return Container();
-                          },
-                        )
+                        TikTokPreview(data: data),
+                        const SizedBox(height: 32),
                       ],
                     );
                   }
