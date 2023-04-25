@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -10,12 +11,25 @@ import 'package:open_filex/open_filex.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:tiktok_downloader/firebase_options.dart';
 import 'package:tiktok_downloader/utils/utils.dart';
+import 'package:unity_ads_plugin/unity_ads_plugin.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  UnityAds.init(
+    gameId: BaseString.gameId,
+    onComplete: () => print('UNITY ADS INIT: COMPLETE'),
+    onFailed: (error, message) => print(
+      'UNITY ADS INIT: ERROR => $error, $message',
+    ),
+    // testMode: true,
+  );
+  // await UnityAds.setPrivacyConsent(PrivacyConsentType.gdpr, true);
+  // await UnityAds.setPrivacyConsent(PrivacyConsentType.ageGate, true);
+  // await UnityAds.setPrivacyConsent(PrivacyConsentType.ccpa, true);
+  // await UnityAds.setPrivacyConsent(PrivacyConsentType.pipl, true);
   await FlutterDownloader.initialize(
     debug: true,
     ignoreSsl: true,

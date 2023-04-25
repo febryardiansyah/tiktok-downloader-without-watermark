@@ -7,8 +7,9 @@ class BaseString {
   static String downloadUrl = 'https://downloader-api.kaedenoki.net/api/tiktok';
   static String serverError = 'Server is down right now, try it later';
   static String errorNoInternet = 'Check your internet!';
-  static String adBannerId = 'ca-app-pub-3297792663114510/4455326119';
-  static String adInterstitialId = 'ca-app-pub-3297792663114510/7274164790';
+  static String adBannerId = 'Banner_Android';
+  static String adInterstitialId = 'Interstitial_Android';
+  static String gameId = '5219966';
 }
 
 class ImageConstants {

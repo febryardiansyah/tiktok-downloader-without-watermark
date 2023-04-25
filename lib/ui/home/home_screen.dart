@@ -19,6 +19,7 @@ import 'package:tiktok_downloader/utils/custom_dialog.dart';
 import 'package:flutter/services.dart';
 import 'package:tiktok_downloader/utils/utils.dart';
 import 'package:tiktok_downloader/widgets/tiktok_preview.dart';
+import 'package:unity_ads_plugin/unity_ads_plugin.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -86,6 +87,12 @@ class _HomeViewState extends State<HomeView> {
   void initState() {
     super.initState();
     context.read<DownloadFileCubit>().registerPort();
+    UnityAds.load(
+      placementId: BaseString.adInterstitialId,
+      onComplete: (placementId) => print('Load Complete $placementId'),
+      onFailed: (placementId, error, message) =>
+          print('Load Failed $placementId: $error $message'),
+    );
   }
 
   @override
@@ -232,6 +239,19 @@ class _HomeViewState extends State<HomeView> {
             listener: (context, state) {
               if (state % 2 == 1) {
                 /// show ads here
+                UnityAds.showVideoAd(
+                  placementId: BaseString.adInterstitialId,
+                  onStart: (placementId) =>
+                      print('Video Ad $placementId started'),
+                  onClick: (placementId) =>
+                      print('Video Ad $placementId click'),
+                  onSkipped: (placementId) =>
+                      print('Video Ad $placementId skipped'),
+                  onComplete: (placementId) =>
+                      print('Video Ad $placementId completed'),
+                  onFailed: (placementId, error, message) =>
+                      print('Video Ad $placementId failed: $error $message'),
+                );
               }
             },
             child: Container(),
@@ -340,7 +360,7 @@ class _HomeViewState extends State<HomeView> {
                           onPressed: state is ValidateTiktokSuccess &&
                                   textEdc.text.isNotEmpty
                               ? () {
-                                  // context.read<AdsCounterCubit>().increment();
+                                  context.read<AdsCounterCubit>().increment();
                                   context
                                       .read<GetDataCubit>()
                                       .fetchData(textEdc.text);
@@ -354,14 +374,19 @@ class _HomeViewState extends State<HomeView> {
                 ],
               ),
               const SizedBox(height: 32),
-              // Center(
-              //   child: Container(
-              //     alignment: Alignment.center,
-              //     child: AdWidget(ad: myBanner),
-              //     width: myBanner.size.width.toDouble(),
-              //     height: myBanner.size.height.toDouble(),
-              //   ),
-              // ),
+
+              /// show banner ads
+              Center(
+                child: UnityBannerAd(
+                  placementId: BaseString.adBannerId,
+                  onLoad: (placementId) =>
+                      print('Banner Ad loaded: $placementId'),
+                  onClick: (placementId) =>
+                      print('Banner Ad clicked: $placementId'),
+                  onFailed: (placementId, error, message) =>
+                      print('Banner Ad $placementId failed: $error $message'),
+                ),
+              ),
             ],
           ),
         ),
